@@ -1,0 +1,775 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Sales Savvy</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body { font-family: 'DM Sans', sans-serif; background: #0a0a0a; color: #fff; min-height: 100vh; }
+
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: #111; }
+::-webkit-scrollbar-thumb { background: #333; border-radius: 3px; }
+
+/* ── NAVBAR ── */
+.navbar {
+position: sticky; top: 0; z-index: 200;
+background: #0a0a0aee; backdrop-filter: blur(12px);
+border-bottom: 1px solid #1e1e1e;
+height: 64px; padding: 0 32px;
+display: flex; align-items: center; justify-content: space-between;
+}
+.nav-logo {
+font-family: ‘Bebas Neue’, sans-serif;
+font-size: 26px; letter-spacing: 3px; color: #f5c518;
+cursor: pointer; user-select: none;
+}
+.nav-right { display: flex; align-items: center; gap: 6px; }
+.nav-btn {
+background: none; border: none; color: #aaa; font-family: ‘DM Sans’, sans-serif;
+font-size: 14px; padding: 7px 13px; border-radius: 8px; cursor: pointer;
+transition: color .2s; display: flex; align-items: center; gap: 4px;
+}
+.nav-btn:hover { color: #f5c518; }
+.nav-btn.active { color: #f5c518; font-weight: 600; }
+.nav-cta {
+background: #f5c518; color: #000; border: none;
+font-family: ‘DM Sans’, sans-serif; font-weight: 800;
+padding: 8px 20px; border-radius: 8px; cursor: pointer; font-size: 13px;
+transition: opacity .2s;
+}
+.nav-cta:hover { opacity: .85; }
+.nav-logout {
+background: none; border: 1px solid #333; color: #888;
+font-family: ‘DM Sans’, sans-serif; font-size: 13px;
+padding: 6px 14px; border-radius: 8px; cursor: pointer;
+transition: border-color .2s;
+}
+.nav-logout:hover { border-color: #555; }
+.cart-badge {
+background: #f5c518; color: #000; border-radius: 50%;
+width: 18px; height: 18px;
+display: inline-flex; align-items: center; justify-content: center;
+font-size: 10px; font-weight: 800;
+}
+.nav-user { color: #666; font-size: 13px; margin: 0 6px; }
+
+/* ── PAGES ── */
+.page { display: none; }
+.page.active { display: block; }
+
+/* ── HOME ── */
+.hero {
+max-width: 1200px; margin: 0 auto;
+padding: 90px 48px 60px;
+display: grid; grid-template-columns: 1fr 1fr; gap: 64px; align-items: center;
+}
+.hero-badge {
+display: inline-block;
+background: #1a1a0a; border: 1px solid #f5c51840;
+border-radius: 100px; padding: 6px 18px; margin-bottom: 24px;
+font-size: 11px; font-weight: 700; letter-spacing: 2px; color: #f5c518;
+}
+.hero h1 {
+font-family: ‘Bebas Neue’, sans-serif;
+font-size: 68px; line-height: 1; letter-spacing: 3px; margin-bottom: 22px;
+}
+.hero h1 span { color: #f5c518; }
+.hero p { color: #888; font-size: 17px; line-height: 1.75; margin-bottom: 40px; }
+.hero-btns { display: flex; gap: 16px; }
+.btn-primary {
+background: #f5c518; color: #000; border: none;
+padding: 15px 36px; border-radius: 12px; cursor: pointer;
+font-weight: 800; font-size: 15px; font-family: ‘DM Sans’, sans-serif;
+transition: transform .15s, opacity .15s;
+}
+.btn-primary:hover { transform: translateY(-2px); opacity: .9; }
+.btn-outline {
+background: none; color: #fff; border: 1px solid #333;
+padding: 15px 36px; border-radius: 12px; cursor: pointer;
+font-weight: 600; font-size: 15px; font-family: ‘DM Sans’, sans-serif;
+transition: border-color .2s;
+}
+.btn-outline:hover { border-color: #666; }
+
+.hero-grid {
+display: grid; grid-template-columns: 1fr 1fr; gap: 14px;
+}
+.hero-card {
+background: #111; border: 1px solid #1e1e1e;
+border-radius: 16px; padding: 24px; text-align: center;
+transition: border-color .2s;
+}
+.hero-card:hover { border-color: #f5c51840; }
+.hero-card .emoji { font-size: 40px; margin-bottom: 12px; }
+.hero-card .hc-name { color: #ddd; font-size: 12px; font-weight: 600; line-height: 1.4; }
+.hero-card .hc-price { color: #f5c518; font-weight: 800; margin-top: 8px; font-size: 15px; }
+
+.stats-bar {
+border-top: 1px solid #1e1e1e; border-bottom: 1px solid #1e1e1e;
+padding: 36px 48px;
+}
+.stats-inner {
+max-width: 1200px; margin: 0 auto;
+display: flex; justify-content: space-around;
+}
+.stat { text-align: center; }
+.stat-num { font-family: ‘Bebas Neue’, sans-serif; font-size: 38px; color: #f5c518; letter-spacing: 1px; }
+.stat-lbl { color: #555; font-size: 12px; margin-top: 4px; letter-spacing: 1px; }
+
+/* ── AUTH ── */
+.auth-wrap {
+min-height: calc(100vh - 64px);
+display: flex; align-items: center; justify-content: center; padding: 32px;
+}
+.auth-card {
+background: #111; border: 1px solid #1e1e1e;
+border-radius: 24px; padding: 48px; width: 100%; max-width: 440px;
+}
+.auth-title {
+font-family: ‘Bebas Neue’, sans-serif;
+font-size: 40px; letter-spacing: 2px; margin-bottom: 8px;
+}
+.auth-bar { width: 40px; height: 4px; background: #f5c518; border-radius: 2px; margin-bottom: 32px; }
+.field { margin-bottom: 20px; }
+.field label { display: block; color: #888; font-size: 11px; font-weight: 700; letter-spacing: 1.5px; margin-bottom: 8px; }
+.field input {
+width: 100%; background: #0a0a0a; border: 1px solid #2a2a2a;
+border-radius: 10px; padding: 12px 16px; color: #fff;
+font-size: 15px; font-family: ‘DM Sans’, sans-serif;
+outline: none; transition: border-color .2s;
+}
+.field input:focus { border-color: #f5c51870; }
+.field input::placeholder { color: #444; }
+.auth-submit {
+width: 100%; background: #f5c518; color: #000; border: none;
+padding: 14px; border-radius: 10px; cursor: pointer;
+font-weight: 800; font-size: 16px; font-family: ‘DM Sans’, sans-serif;
+margin-top: 8px; transition: opacity .2s;
+}
+.auth-submit:hover { opacity: .88; }
+.auth-link { color: #666; text-align: center; margin-top: 24px; font-size: 14px; }
+.auth-link span { color: #f5c518; cursor: pointer; font-weight: 600; }
+.auth-link span:hover { text-decoration: underline; }
+
+/* ── PRODUCTS ── */
+.products-wrap { min-height: calc(100vh - 64px); padding: 40px 32px; }
+.section-title {
+font-family: ‘Bebas Neue’, sans-serif;
+font-size: 48px; letter-spacing: 3px; margin-bottom: 32px;
+}
+.filters { display: flex; gap: 12px; margin-bottom: 32px; flex-wrap: wrap; align-items: center; }
+.search-input {
+background: #111; border: 1px solid #2a2a2a;
+border-radius: 10px; padding: 10px 16px; color: #fff;
+font-size: 14px; font-family: ‘DM Sans’, sans-serif;
+width: 240px; outline: none;
+}
+.search-input::placeholder { color: #444; }
+.search-input:focus { border-color: #f5c51860; }
+.cat-btn {
+background: #111; color: #888; border: 1px solid #2a2a2a;
+border-radius: 8px; padding: 8px 16px; cursor: pointer;
+font-size: 13px; font-weight: 600; font-family: ‘DM Sans’, sans-serif;
+transition: all .2s;
+}
+.cat-btn.active, .cat-btn:hover { background: #f5c518; color: #000; border-color: #f5c518; }
+
+.products-grid {
+display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 24px;
+max-width: 1200px; margin: 0 auto;
+}
+.product-card {
+background: #111; border: 1px solid #1e1e1e; border-radius: 20px;
+overflow: hidden; transition: all .22s; cursor: default;
+}
+.product-card:hover {
+border-color: #f5c51840; transform: translateY(-5px);
+box-shadow: 0 20px 48px rgba(0,0,0,.45);
+}
+.product-img {
+background: #0d0d0d; padding: 32px; text-align: center;
+font-size: 58px; border-bottom: 1px solid #1a1a1a;
+}
+.product-body { padding: 20px; }
+.product-cat { font-size: 11px; color: #f5c518; font-weight: 700; letter-spacing: 1px; margin-bottom: 6px; }
+.product-name { color: #fff; font-weight: 600; font-size: 14px; line-height: 1.45; margin-bottom: 10px; }
+.product-meta { display: flex; align-items: center; gap: 8px; margin-bottom: 16px; }
+.product-rating { color: #f5c518; font-size: 13px; }
+.product-reviews { color: #555; font-size: 12px; }
+.product-footer { display: flex; justify-content: space-between; align-items: center; }
+.product-price { font-size: 20px; font-weight: 800; color: #fff; }
+.add-btn {
+background: #f5c518; color: #000; border: none;
+padding: 8px 18px; border-radius: 8px; cursor: pointer;
+font-weight: 700; font-size: 13px; font-family: ‘DM Sans’, sans-serif;
+transition: opacity .2s;
+}
+.add-btn:hover { opacity: .85; }
+.empty-msg { text-align: center; color: #444; padding: 80px; font-size: 18px; }
+
+/* ── CART ── */
+.cart-wrap { min-height: calc(100vh - 64px); padding: 40px 32px; }
+.cart-inner { max-width: 1000px; margin: 0 auto; }
+.cart-layout { display: grid; grid-template-columns: 1fr 340px; gap: 32px; }
+.cart-items { display: flex; flex-direction: column; gap: 16px; }
+.cart-item {
+background: #111; border: 1px solid #1e1e1e; border-radius: 16px;
+padding: 20px; display: flex; gap: 18px; align-items: center;
+}
+.cart-item-emoji { font-size: 46px; flex-shrink: 0; }
+.cart-item-info { flex: 1; }
+.cart-item-name { color: #ddd; font-weight: 600; font-size: 14px; margin-bottom: 4px; }
+.cart-item-price { color: #f5c518; font-weight: 700; }
+.qty-ctrl { display: flex; align-items: center; gap: 10px; }
+.qty-btn {
+background: #1e1e1e; color: #fff; border: none;
+width: 32px; height: 32px; border-radius: 8px;
+cursor: pointer; font-size: 18px; font-family: ‘DM Sans’, sans-serif;
+transition: background .15s; display: flex; align-items: center; justify-content: center;
+}
+.qty-btn:hover { background: #2a2a2a; }
+.qty-num { color: #fff; font-weight: 700; min-width: 22px; text-align: center; }
+.cart-item-total { color: #fff; font-weight: 800; min-width: 80px; text-align: right; font-size: 15px; }
+.remove-btn {
+background: none; border: none; color: #444; cursor: pointer;
+font-size: 18px; padding: 4px; transition: color .15s;
+}
+.remove-btn:hover { color: #e53e3e; }
+
+.order-summary {
+background: #111; border: 1px solid #1e1e1e; border-radius: 20px;
+padding: 28px; height: fit-content;
+}
+.summary-title { font-family: ‘Bebas Neue’, sans-serif; font-size: 28px; letter-spacing: 1px; margin-bottom: 24px; }
+.summary-row { display: flex; justify-content: space-between; margin-bottom: 12px; color: #888; font-size: 14px; }
+.summary-row span:last-child { color: #ddd; }
+.summary-row .free { color: #4ade80; }
+.summary-divider { border: none; border-top: 1px solid #1e1e1e; margin: 16px 0; }
+.summary-total { display: flex; justify-content: space-between; align-items: center; }
+.summary-total-lbl { color: #fff; font-weight: 700; font-size: 17px; }
+.summary-total-amt { color: #f5c518; font-weight: 900; font-size: 24px; }
+.checkout-btn {
+width: 100%; background: #f5c518; color: #000; border: none;
+padding: 15px; border-radius: 12px; cursor: pointer;
+font-weight: 800; font-size: 16px; font-family: ‘DM Sans’, sans-serif;
+margin-top: 24px; transition: opacity .2s;
+}
+.checkout-btn:hover { opacity: .88; }
+.clear-btn {
+width: 100%; background: none; color: #555; border: 1px solid #2a2a2a;
+padding: 11px; border-radius: 12px; cursor: pointer;
+font-size: 14px; font-family: ‘DM Sans’, sans-serif;
+margin-top: 12px; transition: border-color .2s;
+}
+.clear-btn:hover { border-color: #555; color: #888; }
+
+.cart-empty {
+min-height: calc(100vh - 64px);
+display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 20px;
+}
+.cart-empty-icon { font-size: 72px; }
+.cart-empty h3 { font-family: ‘Bebas Neue’, sans-serif; font-size: 38px; letter-spacing: 2px; }
+.cart-empty p { color: #666; }
+
+/* ── CHECKOUT ── */
+.checkout-wrap { min-height: calc(100vh - 64px); padding: 40px 32px; }
+.checkout-inner { max-width: 820px; margin: 0 auto; }
+.checkout-layout { display: grid; grid-template-columns: 1fr 300px; gap: 32px; }
+.checkout-form-card {
+background: #111; border: 1px solid #1e1e1e; border-radius: 20px; padding: 32px;
+}
+.checkout-form-title {
+color: #f5c518; font-family: ‘Bebas Neue’, sans-serif;
+font-size: 26px; letter-spacing: 1px; margin-bottom: 24px;
+}
+.place-btn {
+width: 100%; background: #f5c518; color: #000; border: none;
+padding: 15px; border-radius: 12px; cursor: pointer;
+font-weight: 800; font-size: 16px; font-family: ‘DM Sans’, sans-serif;
+margin-top: 8px; transition: opacity .2s;
+}
+.place-btn:hover { opacity: .88; }
+.order-items-card {
+background: #111; border: 1px solid #1e1e1e; border-radius: 20px;
+padding: 24px; height: fit-content;
+}
+.order-items-title { font-family: ‘Bebas Neue’, sans-serif; font-size: 22px; letter-spacing: 1px; margin-bottom: 16px; }
+.order-item-row {
+display: flex; justify-content: space-between;
+padding-bottom: 10px; margin-bottom: 10px;
+border-bottom: 1px solid #1a1a1a; font-size: 13px;
+}
+.order-item-row:last-child { border: none; margin: 0; padding: 0; }
+.order-item-lbl { color: #777; }
+.order-item-val { color: #ddd; font-weight: 600; }
+.order-total-row { display: flex; justify-content: space-between; margin-top: 10px; padding-top: 12px; border-top: 1px solid #1e1e1e; }
+
+/* ── SUCCESS ── */
+.success-wrap {
+min-height: calc(100vh - 64px);
+display: flex; flex-direction: column; align-items: center; justify-content: center;
+gap: 20px; padding: 32px; text-align: center;
+}
+.success-icon { font-size: 80px; animation: pop .4s ease; }
+@keyframes pop { 0%{transform:scale(0)} 80%{transform:scale(1.15)} 100%{transform:scale(1)} }
+.success-title { font-family: ‘Bebas Neue’, sans-serif; font-size: 52px; letter-spacing: 3px; color: #fff; }
+.success-sub { color: #666; max-width: 380px; line-height: 1.7; }
+
+/* ── TOAST ── */
+#toast-container {
+position: fixed; bottom: 24px; right: 24px;
+z-index: 9999; display: flex; flex-direction: column; gap: 10px;
+pointer-events: none;
+}
+.toast {
+background: #1a1a1a; color: #fff;
+padding: 13px 20px; border-radius: 10px; font-size: 14px;
+box-shadow: 0 8px 32px rgba(0,0,0,.35);
+border-left: 4px solid #f5c518;
+animation: slideIn .3s ease;
+pointer-events: all;
+}
+.toast.error { border-left-color: #e53e3e; }
+@keyframes slideIn { from { opacity:0; transform:translateX(30px); } to { opacity:1; transform:translateX(0); } }
+@keyframes slideOut { from { opacity:1; transform:translateX(0); } to { opacity:0; transform:translateX(30px); } }
+.toast.out { animation: slideOut .3s ease forwards; }
+</style>
+
+</head>
+<body>
+
+<!-- ══ NAVBAR ════════════════════════════════════════════════════ -->
+
+<nav class="navbar">
+  <div class="nav-logo" onclick="navigate('home')">SALES SAVVY</div>
+  <div class="nav-right" id="nav-right"></div>
+</nav>
+
+<!-- ══ PAGES ══════════════════════════════════════════════════════ -->
+
+<!-- HOME -->
+
+<div class="page" id="page-home">
+  <div class="hero">
+    <div>
+      <div class="hero-badge">✦ PREMIUM E-COMMERCE</div>
+      <h1>SHOP<br><span>SMARTER.</span><br>LIVE BETTER.</h1>
+      <p>Discover curated products across electronics, fashion, and lifestyle. Fast delivery, secure payments, real-time updates.</p>
+      <div class="hero-btns">
+        <button class="btn-primary" id="hero-main-btn">Get Started →</button>
+        <button class="btn-outline" id="hero-sec-btn" onclick="navigate('login')">Login</button>
+      </div>
+    </div>
+    <div class="hero-grid" id="hero-grid"></div>
+  </div>
+  <div class="stats-bar">
+    <div class="stats-inner">
+      <div class="stat"><div class="stat-num">500+</div><div class="stat-lbl">PRODUCTS</div></div>
+      <div class="stat"><div class="stat-num">50K+</div><div class="stat-lbl">CUSTOMERS</div></div>
+      <div class="stat"><div class="stat-num">4.8★</div><div class="stat-lbl">AVG RATING</div></div>
+      <div class="stat"><div class="stat-num">24HR</div><div class="stat-lbl">DELIVERY</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- LOGIN -->
+
+<div class="page" id="page-login">
+  <div class="auth-wrap">
+    <div class="auth-card">
+      <div class="auth-title">WELCOME BACK</div>
+      <div class="auth-bar"></div>
+      <div class="field"><label>EMAIL</label><input type="email" id="login-email" placeholder="you@example.com" /></div>
+      <div class="field"><label>PASSWORD</label><input type="password" id="login-password" placeholder="••••••••" /></div>
+      <button class="auth-submit" onclick="doLogin()">Login →</button>
+      <p class="auth-link">No account? <span onclick="navigate('register')">Sign up</span></p>
+    </div>
+  </div>
+</div>
+
+<!-- REGISTER -->
+
+<div class="page" id="page-register">
+  <div class="auth-wrap">
+    <div class="auth-card">
+      <div class="auth-title">CREATE ACCOUNT</div>
+      <div class="auth-bar"></div>
+      <div class="field"><label>FULL NAME</label><input type="text" id="reg-name" placeholder="Your Name" /></div>
+      <div class="field"><label>EMAIL</label><input type="email" id="reg-email" placeholder="you@example.com" /></div>
+      <div class="field"><label>PASSWORD</label><input type="password" id="reg-password" placeholder="Min. 6 characters" /></div>
+      <button class="auth-submit" onclick="doRegister()">Create Account →</button>
+      <p class="auth-link">Already have an account? <span onclick="navigate('login')">Login</span></p>
+    </div>
+  </div>
+</div>
+
+<!-- PRODUCTS -->
+
+<div class="page" id="page-products">
+  <div class="products-wrap">
+    <div style="max-width:1200px;margin:0 auto">
+      <div class="section-title">ALL PRODUCTS</div>
+      <div class="filters">
+        <input class="search-input" id="search-input" placeholder="Search products…" oninput="renderProducts()" />
+        <div id="cat-buttons"></div>
+      </div>
+      <div class="products-grid" id="products-grid"></div>
+    </div>
+  </div>
+</div>
+
+<!-- CART -->
+
+<div class="page" id="page-cart">
+  <div class="cart-wrap">
+    <div class="cart-inner" id="cart-inner"></div>
+  </div>
+</div>
+
+<!-- CHECKOUT -->
+
+<div class="page" id="page-checkout">
+  <div class="checkout-wrap">
+    <div class="checkout-inner" id="checkout-inner"></div>
+  </div>
+</div>
+
+<!-- SUCCESS -->
+
+<div class="page" id="page-success">
+  <div class="success-wrap">
+    <div class="success-icon">🎉</div>
+    <div class="success-title">ORDER PLACED!</div>
+    <p class="success-sub">Your order has been successfully placed. You'll receive a confirmation shortly.</p>
+    <button class="btn-primary" onclick="navigate('products')">Continue Shopping →</button>
+  </div>
+</div>
+
+<!-- TOAST CONTAINER -->
+
+<div id="toast-container"></div>
+
+<script>
+// ══ DATA ════════════════════════════════════════════════════════════
+const PRODUCTS = [
+  { id:1, name:"Wireless Noise-Cancelling Headphones", price:2499, category:"Electronics", emoji:"🎧", rating:4.8, reviews:312 },
+  { id:2, name:"Minimal Leather Wallet",                price:899,  category:"Accessories", emoji:"👜", rating:4.5, reviews:187 },
+  { id:3, name:"Smart Fitness Tracker",                 price:3299, category:"Electronics", emoji:"⌚", rating:4.7, reviews:423 },
+  { id:4, name:"Premium Sunglasses",                   price:1499, category:"Accessories", emoji:"🕶️", rating:4.3, reviews:98  },
+  { id:5, name:"Organic Cotton T-Shirt",               price:599,  category:"Clothing",    emoji:"👕", rating:4.6, reviews:256 },
+  { id:6, name:"Stainless Steel Water Bottle",         price:799,  category:"Home",        emoji:"🍶", rating:4.9, reviews:511 },
+  { id:7, name:"Mechanical Keyboard",                  price:4999, category:"Electronics", emoji:"⌨️", rating:4.7, reviews:289 },
+  { id:8, name:"Linen Jogger Pants",                   price:1199, category:"Clothing",    emoji:"👖", rating:4.4, reviews:134 },
+];
+const CATEGORIES = ["All","Electronics","Accessories","Clothing","Home"];
+
+// ══ STATE ═══════════════════════════════════════════════════════════
+let state = {
+  user: null,
+  cart: [],       // [{...product, qty}]
+  activeCat: "All",
+  currentPage: "home",
+};
+
+// ══ ROUTER ══════════════════════════════════════════════════════════
+function navigate(page) {
+  document.querySelectorAll(".page").forEach(p => p.classList.remove("active"));
+  document.getElementById("page-" + page).classList.add("active");
+  state.currentPage = page;
+  renderNav();
+
+  if (page === "products") renderProducts();
+  if (page === "cart")     renderCart();
+  if (page === "checkout") renderCheckout();
+  if (page === "home")     renderHome();
+
+  window.scrollTo(0, 0);
+}
+
+// ══ TOAST ═══════════════════════════════════════════════════════════
+function toast(msg, type = "success") {
+  const el = document.createElement("div");
+  el.className = "toast" + (type === "error" ? " error" : "");
+  el.textContent = msg;
+  document.getElementById("toast-container").appendChild(el);
+  setTimeout(() => {
+    el.classList.add("out");
+    setTimeout(() => el.remove(), 300);
+  }, 2700);
+}
+
+// ══ NAV ═════════════════════════════════════════════════════════════
+function renderNav() {
+  const el = document.getElementById("nav-right");
+  const p = state.currentPage;
+  if (state.user) {
+    const cnt = state.cart.reduce((s,i) => s+i.qty, 0);
+    el.innerHTML = `
+      <button class="nav-btn ${p==='products'?'active':''}" onclick="navigate('products')">Shop</button>
+      <button class="nav-btn ${p==='cart'?'active':''}" onclick="navigate('cart')">
+        Cart ${cnt > 0 ? `<span class="cart-badge">${cnt}</span>` : ""}
+      </button>
+      <span class="nav-user">Hi, ${state.user.name}</span>
+      <button class="nav-logout" onclick="doLogout()">Logout</button>
+    `;
+  } else {
+    el.innerHTML = `
+      <button class="nav-btn ${p==='login'?'active':''}" onclick="navigate('login')">Login</button>
+      <button class="nav-cta" onclick="navigate('register')">Sign Up</button>
+    `;
+  }
+}
+
+// ══ HOME ═════════════════════════════════════════════════════════════
+function renderHome() {
+  const heroBtn = document.getElementById("hero-main-btn");
+  const secBtn  = document.getElementById("hero-sec-btn");
+  if (state.user) {
+    heroBtn.textContent = "Browse Products →";
+    heroBtn.onclick = () => navigate("products");
+    secBtn.style.display = "none";
+  } else {
+    heroBtn.textContent = "Get Started →";
+    heroBtn.onclick = () => navigate("register");
+    secBtn.style.display = "";
+  }
+
+  const grid = document.getElementById("hero-grid");
+  grid.innerHTML = PRODUCTS.slice(0,4).map(p => `
+    <div class="hero-card">
+      <div class="emoji">${p.emoji}</div>
+      <div class="hc-name">${p.name}</div>
+      <div class="hc-price">₹${p.price.toLocaleString()}</div>
+    </div>
+  `).join("");
+}
+
+// ══ AUTH ═════════════════════════════════════════════════════════════
+function doLogin() {
+  const email = document.getElementById("login-email").value.trim();
+  const pass  = document.getElementById("login-password").value;
+  if (!email || !pass)         { toast("All fields are required", "error"); return; }
+  if (!email.includes("@"))    { toast("Invalid email format", "error"); return; }
+  state.user = { email, name: email.split("@")[0] };
+  toast("Welcome back! 👋");
+  navigate("products");
+}
+
+function doRegister() {
+  const name  = document.getElementById("reg-name").value.trim();
+  const email = document.getElementById("reg-email").value.trim();
+  const pass  = document.getElementById("reg-password").value;
+  if (!name || !email || !pass) { toast("All fields are required", "error"); return; }
+  if (!email.includes("@"))     { toast("Invalid email format", "error"); return; }
+  if (pass.length < 6)          { toast("Password must be at least 6 characters", "error"); return; }
+  state.user = { email, name };
+  toast("Account created! Welcome 🎉");
+  navigate("products");
+}
+
+function doLogout() {
+  state.user = null;
+  state.cart = [];
+  toast("Logged out successfully");
+  navigate("home");
+}
+
+// ══ PRODUCTS ══════════════════════════════════════════════════════════
+function renderCatButtons() {
+  const el = document.getElementById("cat-buttons");
+  el.innerHTML = CATEGORIES.map(c => `
+    <button class="cat-btn ${state.activeCat===c?'active':''}"
+      onclick="setCategory('${c}')">${c}</button>
+  `).join("");
+}
+
+function setCategory(cat) {
+  state.activeCat = cat;
+  renderProducts();
+}
+
+function renderProducts() {
+  renderCatButtons();
+  const search = (document.getElementById("search-input")?.value || "").toLowerCase();
+  const filtered = PRODUCTS.filter(p => {
+    const matchCat = state.activeCat === "All" || p.category === state.activeCat;
+    const matchSearch = p.name.toLowerCase().includes(search);
+    return matchCat && matchSearch;
+  });
+
+  const grid = document.getElementById("products-grid");
+  if (filtered.length === 0) {
+    grid.innerHTML = `<div class="empty-msg" style="grid-column:1/-1">No products found.</div>`;
+    return;
+  }
+  grid.innerHTML = filtered.map(p => `
+    <div class="product-card">
+      <div class="product-img">${p.emoji}</div>
+      <div class="product-body">
+        <div class="product-cat">${p.category}</div>
+        <div class="product-name">${p.name}</div>
+        <div class="product-meta">
+          <span class="product-rating">★ ${p.rating}</span>
+          <span class="product-reviews">(${p.reviews})</span>
+        </div>
+        <div class="product-footer">
+          <span class="product-price">₹${p.price.toLocaleString()}</span>
+          <button class="add-btn" onclick="addToCart(${p.id})">Add +</button>
+        </div>
+      </div>
+    </div>
+  `).join("");
+}
+
+// ══ CART LOGIC ════════════════════════════════════════════════════════
+function addToCart(id) {
+  if (!state.user) { toast("Please login to add items", "error"); navigate("login"); return; }
+  const product = PRODUCTS.find(p => p.id === id);
+  const existing = state.cart.find(i => i.id === id);
+  if (existing) {
+    existing.qty++;
+  } else {
+    state.cart.push({ ...product, qty: 1 });
+  }
+  renderNav();
+  toast(`${product.name} added to cart ✓`);
+}
+
+function removeFromCart(id) {
+  state.cart = state.cart.filter(i => i.id !== id);
+  renderCart();
+  renderNav();
+}
+
+function updateQty(id, delta) {
+  const item = state.cart.find(i => i.id === id);
+  if (!item) return;
+  item.qty += delta;
+  if (item.qty < 1) { removeFromCart(id); return; }
+  renderCart();
+  renderNav();
+}
+
+function clearCart() {
+  state.cart = [];
+  renderCart();
+  renderNav();
+  toast("Cart cleared");
+}
+
+function cartTotal() {
+  return state.cart.reduce((s, i) => s + i.price * i.qty, 0);
+}
+
+// ══ RENDER CART ════════════════════════════════════════════════════════
+function renderCart() {
+  const el = document.getElementById("cart-inner");
+
+  if (state.cart.length === 0) {
+    el.innerHTML = `
+      <div class="cart-empty">
+        <div class="cart-empty-icon">🛒</div>
+        <h3>CART IS EMPTY</h3>
+        <p>Add some products to get started!</p>
+        <button class="btn-primary" onclick="navigate('products')">Browse Products →</button>
+      </div>`;
+    return;
+  }
+
+  const total = cartTotal();
+  const items = state.cart.map(item => `
+    <div class="cart-item">
+      <div class="cart-item-emoji">${item.emoji}</div>
+      <div class="cart-item-info">
+        <div class="cart-item-name">${item.name}</div>
+        <div class="cart-item-price">₹${item.price.toLocaleString()}</div>
+      </div>
+      <div class="qty-ctrl">
+        <button class="qty-btn" onclick="updateQty(${item.id},-1)">−</button>
+        <span class="qty-num">${item.qty}</span>
+        <button class="qty-btn" onclick="updateQty(${item.id},1)">+</button>
+      </div>
+      <div class="cart-item-total">₹${(item.price * item.qty).toLocaleString()}</div>
+      <button class="remove-btn" onclick="removeFromCart(${item.id})">✕</button>
+    </div>
+  `).join("");
+
+  el.innerHTML = `
+    <div class="section-title">YOUR CART</div>
+    <div class="cart-layout">
+      <div class="cart-items">${items}</div>
+      <div class="order-summary">
+        <div class="summary-title">ORDER SUMMARY</div>
+        <div class="summary-row"><span>Subtotal</span><span>₹${total.toLocaleString()}</span></div>
+        <div class="summary-row"><span>Delivery</span><span class="free">FREE</span></div>
+        <hr class="summary-divider" />
+        <div class="summary-total">
+          <span class="summary-total-lbl">Total</span>
+          <span class="summary-total-amt">₹${total.toLocaleString()}</span>
+        </div>
+        <button class="checkout-btn" onclick="navigate('checkout')">Proceed to Checkout →</button>
+        <button class="clear-btn" onclick="clearCart()">Clear Cart</button>
+      </div>
+    </div>
+  `;
+}
+
+// ══ RENDER CHECKOUT ═══════════════════════════════════════════════════
+function renderCheckout() {
+  if (state.cart.length === 0) { navigate("products"); return; }
+  const total = cartTotal();
+  const el = document.getElementById("checkout-inner");
+
+  const orderItems = state.cart.map(item => `
+    <div class="order-item-row">
+      <span class="order-item-lbl">${item.emoji} ${item.name} ×${item.qty}</span>
+      <span class="order-item-val">₹${(item.price * item.qty).toLocaleString()}</span>
+    </div>
+  `).join("");
+
+  el.innerHTML = `
+    <div class="section-title">CHECKOUT</div>
+    <div class="checkout-layout">
+      <div class="checkout-form-card">
+        <div class="checkout-form-title">SHIPPING DETAILS</div>
+        <div class="field"><label>DELIVERY ADDRESS</label><input type="text" id="co-address" placeholder="Street, Area" /></div>
+        <div class="field"><label>CITY</label><input type="text" id="co-city" placeholder="City" /></div>
+        <div class="field"><label>PHONE NUMBER</label><input type="tel" id="co-phone" placeholder="10-digit number" /></div>
+        <button class="place-btn" onclick="placeOrder()">Place Order →</button>
+      </div>
+      <div class="order-items-card">
+        <div class="order-items-title">ITEMS (${state.cart.length})</div>
+        ${orderItems}
+        <div class="order-total-row">
+          <span style="color:#fff;font-weight:700">Total</span>
+          <span style="color:#f5c518;font-weight:900;font-size:20px">₹${total.toLocaleString()}</span>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function placeOrder() {
+  const address = document.getElementById("co-address")?.value.trim();
+  const city    = document.getElementById("co-city")?.value.trim();
+  const phone   = document.getElementById("co-phone")?.value.trim();
+  if (!address || !city || !phone) { toast("Please fill all fields", "error"); return; }
+  if (phone.replace(/\D/g,"").length < 10) { toast("Enter a valid 10-digit phone number", "error"); return; }
+  state.cart = [];
+  renderNav();
+  toast("Order placed successfully! 🎉");
+  navigate("success");
+}
+
+// ══ INIT ═════════════════════════════════════════════════════════════
+navigate("home");
+</script>
+
+</body>
+</html>
